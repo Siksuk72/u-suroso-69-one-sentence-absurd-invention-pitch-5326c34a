@@ -15,11 +15,14 @@ ENTRY_TEXT = (
 MAX_CHARS = 220
 
 
-def main() -> None:
-    text = ENTRY_TEXT
+def validate(text: str) -> str:
+    """Check the pitch against the sealed scorer's rules and return it.
 
-    # Gate, mirroring the sealed scorer: UTF-8 text, 1-220 chars,
-    # not only whitespace, exactly one sentence, no trailing newline.
+    Rules: UTF-8 text, non-empty and not only whitespace, 1-220 chars,
+    exactly one sentence (a single full stop at the very end, no other
+    sentence-ending punctuation anywhere inside), and no trailing
+    newline. Raises SystemExit with a clear message on the first failure.
+    """
     if not text or text != text.strip() or not text.strip():
         raise SystemExit("entry text must be non-empty, non-whitespace text")
     if len(text) > MAX_CHARS:
@@ -29,6 +32,11 @@ def main() -> None:
     body = text[:-1]
     if "." in body or "!" in body or "?" in body:
         raise SystemExit("entry text must be exactly one sentence")
+    return text
+
+
+def main() -> None:
+    text = validate(ENTRY_TEXT)
 
     os.makedirs("/output", exist_ok=True)
     out_path = "/output/entry.txt"
